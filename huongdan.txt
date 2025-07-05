@@ -1,0 +1,63 @@
+Bước 1: Tải và cài đặt OpenSSL cho MinGW
+Truy cập:
+👉 https://slproweb.com/products/Win32OpenSSL.html
+
+Tải bản:
+Win64 OpenSSL v3.x.x Light
+Hoặc nếu dùng MinGW 32-bit thì chọn Win32
+Cài đặt tại thư mục dễ nhớ, ví dụ:
+C:\OpenSSL-Mingw64
+✅ Bước 2: Tạo project C++ trong VSCode
+Cấu trúc thư mục:
+secure-chat/
+├── secure_chat.cpp
+├── message.txt
+├── sender_private.pem
+├── sender_public.pem
+├── receiver_private.pem
+├── receiver_public.pem
+└── .vscode/
+    └── tasks.json
+✅ Bước 3: Mã nguồn secure_chat.cpp 
+✅ Bước 4: Tạo file build .vscode/tasks.json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build secure_chat",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "secure_chat.cpp",
+        "-o",
+        "secure_chat.exe",
+        "-IC:/OpenSSL-Mingw64/include",
+        "-LC:/OpenSSL-Mingw64/lib",
+        "-lssl",
+        "-lcrypto"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+
+✅ Bước 5: Tạo khóa RSA (1 lần duy nhất)
+Mở Terminal ở thư mục project:
+openssl genrsa -out sender_private.pem 2048
+openssl rsa -in sender_private.pem -pubout -out sender_public.pem
+
+openssl genrsa -out receiver_private.pem 2048
+openssl rsa -in receiver_private.pem -pubout -out receiver_public.pem
+✅ Bước 6: Tạo message.txt
+Tạo file message.txt, viết nội dung bạn muốn gửi:
+Xin chào, đây là tin nhắn đã mã hóa!
+✅ Bước 7: Biên dịch và chạy
+Ctrl + Shift + B để build → tạo ra secure_chat.exe
+
+Chạy sender:
+secure_chat.exe sender
+Chạy receiver 
+secure_chat.exe receiver
